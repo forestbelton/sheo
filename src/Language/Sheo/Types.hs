@@ -27,7 +27,7 @@ data Expr
     | List [Expr]
     | Map (M.HashMap Expr Expr)
     | Set (S.HashSet Expr)
-    | Lam Expr
+    | Lam Name Expr
     | App Expr Expr
     | FMap Expr Expr
     | Fold Expr Expr Expr
