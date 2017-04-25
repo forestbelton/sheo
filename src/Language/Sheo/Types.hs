@@ -7,11 +7,16 @@ newtype Program = Program { programDecls :: [Decl] }
     deriving (Show)
 
 data Decl
-    = DataDecl [Field]
+    = DataDecl Name [Field]
     | ServiceDecl Name [Name] [Method]
     deriving (Show)
 
-newtype Method = Method { methodStatements :: [Statement] }
+data Method = Method
+    { methodReturnType :: Ty
+    , methodName :: Name
+    , methodParams :: [Field]
+    , methodStatements :: [Statement]
+    }
     deriving (Show)
 
 data Statement
@@ -20,7 +25,7 @@ data Statement
     deriving (Show)
 
 data Expr
-    = Var Int
+    = Var Name Int
     | B Bool
     | I Int
     | S String
