@@ -31,6 +31,7 @@ data Expr
     | App Expr Expr
     | FMap Expr Expr
     | Fold Expr Expr Expr
+    deriving (Show)
 
 data Field = Field Name Ty
     deriving (Show)
