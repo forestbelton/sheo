@@ -20,12 +20,12 @@ data Method = Method
     deriving (Show)
 
 data Statement
-    = Assign Name Expr
+    = Assign Name (Maybe Ty) Expr
     | Simply Expr
     deriving (Show)
 
 data Expr
-    = Var Name Int
+    = Var Name (Maybe Ty) Int
     | B Bool
     | I Int
     | S String
