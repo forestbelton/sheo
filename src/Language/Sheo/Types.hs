@@ -8,7 +8,7 @@ newtype Program = Program { programDecls :: [Decl] }
 
 data Decl
     = DataDecl Name [Field]
-    | ServiceDecl Name [Name] [Method]
+    | ServiceDecl Name [(Name, Maybe Ty)] [Method]
     deriving (Show)
 
 data Method = Method
@@ -49,6 +49,7 @@ data Ty
     | TList Ty
     | TMap Ty Ty
     | TSet Ty
+    | TClass String
     deriving (Show)
 
 newtype Name = Name { getName :: String }
