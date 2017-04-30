@@ -21,6 +21,12 @@ printServiceInterface d@(ServiceDecl n deps ms) = publicDefn [] intr defns
     where intr = text "interface" <+> interfaceName d
           defns = map (pretty . MethodDeclaration) ms
 
+newtype ServiceImpl = ServiceImpl { getImpl :: Decl }
+    deriving (Show)
+
+instance Pretty ServiceImpl where
+    pretty = printServiceImpl . getImpl
+
 printServiceImpl :: Decl -> Doc
 printServiceImpl d@(ServiceDecl n deps ms) = publicDefn [] decl defns
     where decl = text "class" <+> className d <+> text "implements" <+> interfaceName d
@@ -80,10 +86,10 @@ newtype MethodImplementation = MethodImplementation { getImplementation :: Metho
 
 printServiceImplMethod :: Method -> Doc
 printServiceImplMethod m@(Method _ _ _ ss) = vsep
-    [ text "@Override"
-    , text "public" <+> pretty (MethodSignature m) <+> lbrace
+    [ green $ text "@Override"
+    , (yellow $ text "public") <+> pretty (MethodSignature m) <+> (white lbrace)
     , indent 2 (vsep $ map pretty ss)
-    , rbrace
+    , white rbrace
     ]
 
 instance Pretty MethodImplementation where
