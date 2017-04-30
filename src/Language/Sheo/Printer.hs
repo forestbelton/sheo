@@ -100,12 +100,9 @@ instance Pretty MethodDeclaration where
 newtype MethodImplementation = MethodImplementation { getImplementation :: Method }
 
 printServiceImplMethod :: Method -> Doc
-printServiceImplMethod m@(Method _ _ _ ss) = vsep
-    [ green $ text "@Override"
-    , (yellow $ text "public") <+> pretty (MethodSignature m) <+> (white lbrace)
-    , nest 2 (printStatements ss)
-    , white rbrace
-    ]
+printServiceImplMethod m@(Method _ _ _ ss) = (green $ text "@Override")
+    <$$> (yellow $ text "public") <+> pretty (MethodSignature m)
+    <+> bracesBody [printStatements ss]
 
 printStatements :: [Statement] -> Doc
 printStatements [] = empty
