@@ -16,7 +16,7 @@ printProgram = vsep . map printDecl . programDecls
 
 publicDefn :: [Doc] -> Doc -> [Doc] -> Doc
 publicDefn anns decl cont = vsep $ anns ++
-    [ (yellow $ text "public") <+> decl <+> lbrace
+    [ access "public" <+> decl <+> lbrace
     , indent 2 (join line $ map pnl cont)
     , rbrace
     ]
@@ -49,7 +49,7 @@ newtype ImplDeps = ImplDeps { getDeps :: [(Name, Maybe Ty)] }
 
 instance Pretty ImplDeps where
     pretty = join (line <> line) . map go . getDeps
-        where go (n, Just ty) = join space [ text "protected"
+        where go (n, Just ty) = join space [ access "protected"
                                     , text "final"
                                     , pretty ty
                                     , pretty n <> semi
@@ -58,14 +58,20 @@ instance Pretty ImplDeps where
 data ImplCtor = ImplCtor Doc [(Name, Maybe Ty)]
 
 instance Pretty ImplCtor where
-    pretty (ImplCtor n deps) = vsep
-        [ green $ text "@Inject"
-        , text "public" <+> n <> (parens $ join (comma <> space) $ map depl deps) <+> lbrace
-        , indent 2 (vsep $ map assign deps)
-        , rbrace
-        ]
+    pretty (ImplCtor n deps) = (green $ text "@Inject")
+        <$$> (access "public" <+> n <> (parens $ join (comma <> space) $ map depl deps))
+        <+> (bracesBody $ map assign deps)
         where depl (n, Just ty) = pretty ty <+> pretty n
               assign (n, Just ty) = text "this." <> pretty n <+> equals <+> pretty n <> semi
+
+access :: String -> Doc
+access = yellow . text
+
+bracesBody :: [Doc] -> Doc
+bracesBody cs = white lbrace <> indent 2 body <$$> white rbrace
+    where body = case cs of
+                     [] -> empty
+                     xs -> line <> vsep cs
 
 className :: Decl -> Doc
 className decl = interfaceName decl <> text "Impl"
