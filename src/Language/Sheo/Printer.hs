@@ -1,4 +1,4 @@
-module Language.Sheo.Printer where
+module Language.Sheo.Printer (prettyPrint) where
 
 import Language.Sheo.Types
 import Text.PrettyPrint.ANSI.Leijen
@@ -99,24 +99,35 @@ printServiceImplMethod :: Method -> Doc
 printServiceImplMethod m@(Method _ _ _ ss) = vsep
     [ green $ text "@Override"
     , (yellow $ text "public") <+> pretty (MethodSignature m) <+> (white lbrace)
-    , indent 2 (vsep $ map pretty ss)
+    , indent 2 $ printStatements ss
     , white rbrace
     ]
+
+printStatements :: [Statement] -> Doc
+printStatements [] = empty
+printStatements xs = vsep $ map pretty t ++ [l']
+    where l = last xs
+          t = init xs
+          l' = case l of
+                   Simply expr -> text "return" <+> pretty expr <> semi
+                   _ -> error "last statement in method must be a simple expr"
 
 instance Pretty MethodImplementation where
     pretty = printServiceImplMethod . getImplementation
 
 instance Pretty Statement where
     pretty (Assign n (Just ty) expr) = text "final" <+> pretty ty <+> pretty n <+> equals <+> pretty expr <> semi
+    pretty (Simply expr) = pretty expr <> semi
 
 instance Pretty Expr where
-    pretty (I x) = text (show x)
+    pretty (I x) = int x
     pretty (B x) = text $ case x of
                               True  -> "true"
                               False -> "false"
     pretty (S s) = dquotes $ text s
     pretty (BOp op l r) = pretty l <+> pretty op <+> pretty r
     pretty (Lam n e)    = parens (pretty n) <+> text "->" <+> pretty e
+    pretty (Var v _)    = pretty v
     pretty _            = empty
 
 instance Pretty BinOp where
