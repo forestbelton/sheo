@@ -1,4 +1,4 @@
-module Language.Sheo.Parser where
+module Language.Sheo.Parser (parse) where
 
 import Control.Applicative
 import Language.Sheo.Types
@@ -6,12 +6,8 @@ import Text.Parser.Token.Style
 import Text.Trifecta
 import Text.Trifecta.Delta
 
--- helpers to remove
-parse :: Parser a -> String -> Result a
-parse p s = parseString p (Columns 0 0) s
-
-fromSuccess :: Result a -> a
-fromSuccess (Success a) = a
+parse :: String -> IO (Maybe Program)
+parse = parseFromFile program
 
 program :: Parser Program
 program = Program <$> many decl
@@ -43,7 +39,7 @@ field :: Parser Field
 field = Field <$> name <*> (colon *> ty)
 
 stmts :: Parser [Statement]
-stmts = commaSep stmt
+stmts = sepBy stmt semi
 
 stmt :: Parser Statement
 stmt = try (Assign <$> (term "let" () *> name) <*> (colon *> (Just <$> ty)) <*> (equals *> expr))
@@ -56,7 +52,14 @@ ws :: Parser ()
 ws = pure () <* many (oneOf " \r\t\n")
 
 expr :: Parser Expr
-expr = I . fromInteger <$> natural
+expr = int
+   <|> bool
+
+int :: Parser Expr
+int = (I . fromInteger <$> natural)
+
+bool :: Parser Expr
+bool = B <$> (term "true" True <|> term "false" False)
 
 ty :: Parser Ty
 ty = chainr1 tyBase (term "->" TFun)

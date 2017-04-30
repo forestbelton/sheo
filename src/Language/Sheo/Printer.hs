@@ -3,17 +3,28 @@ module Language.Sheo.Printer where
 import Language.Sheo.Types
 import Text.PrettyPrint.ANSI.Leijen
 
+prettyPrint :: Program -> Doc
+prettyPrint = pretty
+
+instance Pretty Program where
+    pretty = printProgram
+
+printProgram :: Program -> Doc
+printProgram = vsep . map printDecl . programDecls
+    where printDecl d@(DataDecl _ _)      = printDataDecl d
+          printDecl s@(ServiceDecl _ _ _) = printServiceInterface s <$$> pretty (ServiceImpl s)
+
 publicDefn :: [Doc] -> Doc -> [Doc] -> Doc
 publicDefn anns decl cont = vsep $ anns ++
-    [ text "public" <+> decl <+> lbrace
-    , indent 2 (vsep $ map pnl cont)
+    [ (yellow $ text "public") <+> decl <+> lbrace
+    , indent 2 (join line $ map pnl cont)
     , rbrace
     ]
-    where pnl l = line <> l
+    where pnl l = l <> line
 
 printDataDecl :: Decl -> Doc
 printDataDecl (DataDecl n fs) = publicDefn anns intr (map pretty fs)
-    where anns = [text "@Value.Immutable"]
+    where anns = [green $ text "@Value.Immutable"]
           intr = text "interface" <+> pretty n
 
 printServiceInterface :: Decl -> Doc
@@ -48,7 +59,7 @@ data ImplCtor = ImplCtor Doc [(Name, Maybe Ty)]
 
 instance Pretty ImplCtor where
     pretty (ImplCtor n deps) = vsep
-        [ text "@Inject"
+        [ green $ text "@Inject"
         , text "public" <+> n <> (parens $ join (comma <> space) $ map depl deps) <+> lbrace
         , indent 2 (vsep $ map assign deps)
         , rbrace

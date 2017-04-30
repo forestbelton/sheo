@@ -2,12 +2,12 @@ name:                sheo
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/githubuser/sheo#readme
+homepage:            https://github.com/forestbelton/sheo#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2017 Author name here
+author:              Forest Belton
+maintainer:          forest@homolo.gy
+copyright:           2017 Forest Belton
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md
@@ -31,6 +31,7 @@ executable sheo-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , sheo
+                     , optparse-applicative >= 0.13.2.0 && < 0.14
   default-language:    Haskell2010
 
 test-suite sheo-test
@@ -44,4 +45,4 @@ test-suite sheo-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/sheo
+  location: https://github.com/forestbelton/sheo
