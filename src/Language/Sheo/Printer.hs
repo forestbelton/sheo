@@ -22,7 +22,7 @@ publicDefn anns decl cont = (vsep anns)
 
 printDataDecl :: Decl -> Doc
 printDataDecl (DataDecl n fs) = publicDefn anns intr (map pretty fs)
-    where anns = [green $ text "@Value.Immutable"]
+    where anns = [ann "@Value.Immutable"]
           intr = text "interface" <+> pretty n
 
 printServiceInterface :: Decl -> Doc
@@ -56,11 +56,14 @@ instance Pretty ImplDeps where
 data ImplCtor = ImplCtor Doc [(Name, Maybe Ty)]
 
 instance Pretty ImplCtor where
-    pretty (ImplCtor n deps) = (green $ text "@Inject")
+    pretty (ImplCtor n deps) = ann "@Inject"
         <$$> (access "public" <+> n <> (parens $ join (comma <> space) $ map depl deps))
         <+> (bracesBody $ map assign deps)
         where depl (n, Just ty) = pretty ty <+> pretty n
               assign (n, Just ty) = text "this." <> pretty n <+> equals <+> pretty n <> semi
+
+ann :: String -> Doc
+ann = green . text
 
 access :: String -> Doc
 access = yellow . text
