@@ -15,11 +15,9 @@ printProgram = vsep . map printDecl . programDecls
           printDecl s@(ServiceDecl _ _ _) = printServiceInterface s <$$> pretty (ServiceImpl s)
 
 publicDefn :: [Doc] -> Doc -> [Doc] -> Doc
-publicDefn anns decl cont = vsep $ anns ++
-    [ access "public" <+> decl <+> lbrace
-    , indent 2 (join line $ map pnl cont)
-    , rbrace
-    ]
+publicDefn anns decl cont = (vsep anns)
+    <$$> (access "public" <+> decl)
+    <+> (bracesBody $ map pnl cont)
     where pnl l = l <> line
 
 printDataDecl :: Decl -> Doc
@@ -68,7 +66,7 @@ access :: String -> Doc
 access = yellow . text
 
 bracesBody :: [Doc] -> Doc
-bracesBody cs = white lbrace <> indent 2 body <$$> white rbrace
+bracesBody cs = white lbrace <> nest 2 body <$$> white rbrace
     where body = case cs of
                      [] -> empty
                      xs -> line <> vsep cs
@@ -105,7 +103,7 @@ printServiceImplMethod :: Method -> Doc
 printServiceImplMethod m@(Method _ _ _ ss) = vsep
     [ green $ text "@Override"
     , (yellow $ text "public") <+> pretty (MethodSignature m) <+> (white lbrace)
-    , indent 2 $ printStatements ss
+    , nest 2 (printStatements ss)
     , white rbrace
     ]
 
