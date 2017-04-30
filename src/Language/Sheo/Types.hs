@@ -24,14 +24,19 @@ data Statement
     | Simply Expr
     deriving (Show)
 
+data BinOp
+    = Add
+    deriving (Show)
+
 data Expr
-    = Var Name (Maybe Ty) Int
+    = Var Name (Maybe Ty)
     | B Bool
     | I Int
     | S String
     | List [Expr]
     | Map (M.HashMap Expr Expr)
     | Set (S.HashSet Expr)
+    | BOp BinOp Expr Expr
     | Lam Name Expr
     | App Expr Expr
     | FMap Expr Expr
