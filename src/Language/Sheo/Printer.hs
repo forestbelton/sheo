@@ -110,7 +110,17 @@ instance Pretty Statement where
     pretty (Assign n (Just ty) expr) = text "final" <+> pretty ty <+> pretty n <+> equals <+> pretty expr <> semi
 
 instance Pretty Expr where
-    pretty _ = empty
+    pretty (I x) = text (show x)
+    pretty (B x) = text $ case x of
+                              True  -> "true"
+                              False -> "false"
+    pretty (S s) = dquotes $ text s
+    pretty (BOp op l r) = pretty l <+> pretty op <+> pretty r
+    pretty (Lam n e)    = parens (pretty n) <+> text "->" <+> pretty e
+    pretty _            = empty
+
+instance Pretty BinOp where
+    pretty Add = text "+"
 
 instance Pretty Field where
     pretty (Field n ty) = pretty ty <+> pretty n <> parens empty <> semi
