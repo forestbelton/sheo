@@ -36,6 +36,7 @@ data Expr
     | List [Expr]
     | Map (M.HashMap Expr Expr)
     | Set (S.HashSet Expr)
+    | Streamed Expr
     | BOp BinOp Expr Expr
     | Lam Name Expr
     | App Expr Expr

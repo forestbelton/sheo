@@ -1,4 +1,4 @@
-module Language.Sheo.Parser (parse) where
+module Language.Sheo.Parser where
 
 import qualified Data.HashSet as S
 
@@ -65,8 +65,9 @@ baseExpr = int
    <|> str
    <|> list
    <|> lam
-   <|> var
    <|> parens expr
+   <|> try funcall
+   <|> var
 
 int :: Parser Expr
 int = (I . fromInteger <$> natural)
@@ -82,6 +83,9 @@ list = List <$> (brackets $ commaSep expr)
 
 lam :: Parser Expr
 lam = Lam <$> (word "\\" *> name) <*> (word "->" *> expr)
+
+funcall :: Parser Expr
+funcall = (flip FMap <$> (word "map" *> expr) <*> expr)
 
 var :: Parser Expr
 var = Var <$> name <*> pure Nothing

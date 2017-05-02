@@ -137,10 +137,13 @@ instance Pretty Expr where
                               True  -> "true"
                               False -> "false"
     pretty (S s) = dquotes $ text s
+    pretty (List es) = text "ImmutableList.builder" <> ps <$$> nest 2 ((vsep $ map elem es) <$$> text ".build" <> ps)
+        where ps = parens empty
+              elem e = text ".add" <> parens (pretty e)
     pretty (BOp op l r)  = pretty l <+> pretty op <+> pretty r
     pretty (Lam n e)     = parens (pretty n) <+> text "->" <+> pretty e
     pretty (App f x)     = pretty f <> parens (pretty x)
-    pretty (FMap x f)    = pretty x <$$> nest 2 (dot <> text "map" <> parens (pretty f))
+    pretty (FMap x f)    = pretty x <$$> indent 2 (dot <> text "map" <> parens (pretty f))
     pretty (Fold xs f x) = pretty xs <$$> nest 2 (dot <> text "reduce" <> parens (commaSep $ map pretty [x, f]))
     pretty (Var v _)     = pretty v
     pretty _             = empty

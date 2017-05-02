@@ -18,6 +18,8 @@ library
   exposed-modules:     Language.Sheo.Types
                      , Language.Sheo.Printer
                      , Language.Sheo.Parser
+                     , Language.Sheo.Rewrite.Rewrite
+                     , Language.Sheo.Rewrite.EnStream
   build-depends:       base >= 4.7 && < 5
                      , unordered-containers >= 0.2.8.0 && < 0.3
                      , trifecta >= 1.6.2.1 && < 1.7
